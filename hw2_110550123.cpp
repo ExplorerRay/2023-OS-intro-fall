@@ -57,6 +57,7 @@ int main(){
     int added_cnt=0, processed_cnt = 0, current_tm = 0, tq_rcd=0;
     bool run, tqr;
     while (processed_cnt < m){
+        //cout << "current: " << current_tm << '\n';
         for(int p=added_cnt;p<m;p++){
             if(rcd_prc[p].arr_tm <= current_tm && rcd_prc[p].bst_tm > 0 ){
                 que[0].emplace_back(rcd_prc[p]);
@@ -75,7 +76,7 @@ int main(){
 
                 // re-emplace preempted proc
                 if(last_prc->id != run_proc->id && last_prc->id != -1 && last_prc->bst_tm > 0){
-                    last_prc->arr_tm = current_tm;
+                    last_prc->arr_tm = current_tm-1;
 
                     if(pcq==last_prc->now_que){
                         que[pcq].pop_back();
@@ -90,11 +91,13 @@ int main(){
                         last_prc->now_que++;
                     }
                     que[last_prc->now_que].emplace_back(*last_prc);
+                    tq_rcd = 0;
 
                     if(algo_tq[last_prc->now_que].first==1) sort(que[last_prc->now_que].begin(), que[last_prc->now_que].end(), cmpBst);
                     else sort(que[last_prc->now_que].begin(), que[last_prc->now_que].end(), cmpArr);
                 }
 
+                //cout << "current: " << current_tm << '\n';
                 cout << "running: " << run_proc->id << '\n';
                 if(algo_tq[pcq].first == 0){ // FCFS
                     run_proc->bst_tm--;
