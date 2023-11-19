@@ -8,7 +8,8 @@ using namespace std;
 condition_variable cv;
 int turn = 0;
 
-void count(int index) {
+// change name avoid ambiguous
+void count_hw(int index) {
   static mutex io_mutex;
   unique_lock<mutex> lock(io_mutex);
   int num = 1000000;
@@ -30,7 +31,7 @@ int main(void) {
   thread t[100];
   
   for (int i = 0; i < 100; i++){
-    t[i] = thread(count, i);
+    t[i] = thread(count_hw, i);
   }
 
   for (int i = 0; i < 100; i++){

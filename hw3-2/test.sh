@@ -1,7 +1,8 @@
 #!/bin/bash
 
 echo "hw3-2.cpp"
-g++ --std=c++2a hw3-2.cpp 
+#g++ --std=c++2a hw3-2.cpp 
+cat /dev/null > tmp.txt
 if [ $? -eq 0 ]; then
   # small testcases: test for deadlock or unconverged
   for testcase in 1 2 3
@@ -24,6 +25,7 @@ if [ $? -eq 0 ]; then
     else
       echo "testcase $testcase: TLE"
     fi
+	cat ans.txt >> tmp.txt
   done
 
   # large testcase: test for busy wait
@@ -40,6 +42,7 @@ if [ $? -eq 0 ]; then
     else
       echo "testcase $testcase: TLE"
     fi
+	cat ans.txt >> tmp.txt
   done
 else
   echo "CE"

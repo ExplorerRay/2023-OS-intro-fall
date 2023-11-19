@@ -11,7 +11,8 @@ using namespace std;
 constexpr int MAX_VERTICES = 750;
 constexpr ptrdiff_t MAX_THREADS{4};
 
-mutex mutexes[MAX_VERTICES];
+mutex mtx;
+//mutex mutexes[MAX_VERTICES];
 counting_semaphore semaphores{MAX_THREADS};
 
 // random number generator
@@ -49,11 +50,14 @@ bool best_response(int v) {
   return true;
 }
 
-void maximum_independent_set(int v) {
+void maximal_independent_set(int v) {
   bool converged = false;
+  
+  //semaphores.acquire();
 
   while (!converged) {
-    if (vertex_checked[v]) {
+	mtx.lock();
+	if (vertex_checked[v]) {
       converged = is_converged();
     } else {
       bool old_response = vertex_status[v];
@@ -64,8 +68,11 @@ void maximum_independent_set(int v) {
         for (int u : adjacent_matrix[v])
           vertex_checked[u] = false;
       }
+
     }
+	mtx.unlock();
   }
+  //semaphores.release();
 }
 
 int main(void) {
@@ -86,7 +93,7 @@ int main(void) {
   }
 
   for (int i = 0; i < V; i++)
-    t[i] = thread(maximum_independent_set, i);
+    t[i] = thread(maximal_independent_set, i);
 
   for (int i = 0; i < V; i++)
     t[i].join();
@@ -98,3 +105,4 @@ int main(void) {
   }
   cout << '\n';
 }
+
