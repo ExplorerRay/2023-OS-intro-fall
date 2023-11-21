@@ -2,24 +2,23 @@
 #include <cstdint>
 #include <vector>
 #include <thread>
-#include <mutex>
 #include <math.h>
 
 using namespace std;
 
-mutex mtx;
 int n, m;
 vector<uint64_t> subsets;
 uint64_t one = static_cast<uint64_t>(1), global_count = 0;
 
-void solve(int index, uint64_t current, int *local_cnt) {
+void solve(int index, uint64_t current, uint64_t *local_cnt) {
     if (index == m) {
         if (current == (one << n) - 1) {
-            (*local_cnt)++;
+			//b[bit]=true;
+			(*local_cnt)++;
         }
     } else {
-        solve(index + 1, current, local_cnt);
-        solve(index + 1, current | subsets[index], local_cnt);
+        solve(index + 1, current, local_cnt );
+        solve(index + 1, current | subsets[index], local_cnt );
     }
 }
 
@@ -48,7 +47,7 @@ int main(int argc, char* argv[]) {
 
     vector<thread> threads;
     cin >> n >> m;
-
+	
     subsets.resize(m);
     for (int i = 0; i < m; i++) {
         int p, temp;
@@ -60,25 +59,27 @@ int main(int argc, char* argv[]) {
     }
 
     vector<uint64_t> subtasks;
-    vector<int> local_cnt(num_threads, 0);
-    subtasks.resize(num_threads);
+    vector<uint64_t*> local_cnt;
+    local_cnt.reserve(num_threads);
+	for (int i = 0; i < num_threads; i++){
+		local_cnt.emplace_back(new uint64_t(0));
+	}
+	subtasks.resize(num_threads);
     int lg = log2(num_threads);
-    threads.emplace_back(solve, lg, 0, &local_cnt[0]);
+    threads.emplace_back(solve, lg, 0, local_cnt[0]);
     for (int j = 1; j < num_threads; j++){
         for (int k = 0; k < lg; k++){
             // get specific bit
             if( j & ( 1 << k ) ) subtasks[j] |= subsets[k];
         }
-        threads.emplace_back(solve, lg, subtasks[j], &local_cnt[j]);
+        threads.emplace_back(solve, lg, subtasks[j], local_cnt[j]);
     }
-    //solve(lg,0,&local_cnt[0]);
-    //solve(lg,subtasks[1],&local_cnt[1]);
     for (int j = 0; j < num_threads; j++){
         threads[j].join();
     }
     
     for(int j = 0; j < num_threads; j++){
-        global_count += local_cnt[j];
+        global_count += *(local_cnt[j]);
     }
 
     cout << global_count << '\n';
