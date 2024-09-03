@@ -1,2 +1,2 @@
-# OS-intro-hw2
-Using cpp to simulate CPU scheduling
+# OS-intro-hw3
+Using cpp to do multi-threading program
